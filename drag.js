@@ -1,6 +1,3 @@
-    <script type="text/javascript">//<![CDATA[
-
-
 class ZoomContainer {
 
   constructor() {
@@ -170,12 +167,8 @@ subjx('.clone-clear').on('click', () => {
 });
 
 
-
-  //]]></script>
-
-  <script>
     // tell the embed parent frame the height of the content
-    if (window.parent && window.parent.parent){
+if (window.parent && window.parent.parent){
       window.parent.parent.postMessage(["resultsFrame", {
         height: document.body.getBoundingClientRect().height,
         slug: "7f45j8qk"
@@ -183,5 +176,4 @@ subjx('.clone-clear').on('click', () => {
     }
 
     // always overwrite window.name, in case users try to set it manually
-    window.name = "result"
-  </script>
+window.name = "result"
