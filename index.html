@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Drag/resize/rotate</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script
+    type="text/javascript"
+    src="/js/lib/dummy.js"
+    
+  ></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+
+      <script type="text/javascript" src="https://rawgit.com/nichollascarter/js-drag-resize-rotate-tool/master/dist/js/subjx.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://rawgit.com/nichollascarter/js-drag-resize-rotate-tool/master/dist/style/subjx.css">
+
+  <style id="compiled-css" type="text/css">
+      html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.draggable {
+  position: absolute;
+  width: 150px;
+  height: 50px;
+  background-color: yellow;
+}
+
+.clonable {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  left: 0;
+}
+
+    /* EOS */
+  </style>
+
+  <script id="insert"></script>
+
+
+</head>
+<body>
+    <div style="width:100%; height:100%;">
+  <div style="position: absolute; display: inline; box-sizing: border-box; color: black">
+    Double click on element to activate/deactivate
+
+    <div id="move">
+      Move:
+      <span></span>
+    </div>
+    <div id="resize">
+      Resize:
+      <span></span>
+    </div>
+    <div id="rotate">
+      Rotate:
+      <span></span>
+    </div>
+  </div>
+
+  <svg id="svg-container" width="100%" height="50%" transform="scale(1, 1)">
+
+    <rect class="drag-svg" x="552" y="209" width="30" height="30" stroke="black" fill="transparent" stroke-width="5" transform="rotate(0 567 224)"></rect>
+    <rect class="drag-svg" x="469" y="211" rx="10" ry="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5" transform="rotate(0 484 226)"></rect>
+
+    <circle cx="792" cy="152" r="20" stroke="red" fill="transparent" stroke-width="5" transform="rotate(0 792 152)"></circle>
+    <ellipse class="drag-svg" cx="358" cy="222" rx="22.000000000000004" ry="17" stroke="red" fill="transparent" stroke-width="5" transform="rotate(0 358 222)"></ellipse>
+
+    <line class="drag-svg" x1="626" x2="666" y1="200" y2="240" stroke="orange" fill="transparent" stroke-width="5" transform="rotate(0 646 220)"></line>
+    <polyline class="drag-svg" points="599 73 604 83 609 78 614 93 619 88 624 103 629 98 634 113 639 108" stroke="orange" fill="transparent" stroke-width="5" transform="rotate(0 619 93)"></polyline>
+
+    <polygon class="drag-svg" points="356 71 361 91 376 91 366 101 371 116 356 106 341 116 346 101 336 91 351 91" stroke="green" fill="transparent" stroke-width="5" transform="rotate(0 356 93.5)"></polygon>
+
+    <path class="drag-svg" d="M451,91 Q471,66,481,91 T521,91 " fill="none" stroke="blue" stroke-width="5" transform="rotate(0 486 91)"></path>
+
+    <g class="drag-svg" style="visibility: visible; cursor: move;">
+      <ellipse cx="150.5" cy="75.478994" rx="25.75" ry="19.97899159663865" fill="#ffffff" stroke="#000000" pointer-events="all" transform="rotate(0 150.5 134.75)"></ellipse>
+      <path d="M150.5,94.12605099999999 L150.5,160.722692 M150.5,107.445385 L202,107.445385 M150.5,107.445385 L99,107.445385 M150.5,160.722692 L202,214 M150.5,160.722692 L99,214 " fill="none" stroke="white" stroke-miterlimit="10" pointer-events="stroke" visibility="hidden" stroke-width="9" transform="rotate(0 150.5 134.75)"></path>
+      <path d="M150.5,94.12605099999999 L150.5,160.722692 M150.5,107.445385 L202,107.445385 M150.5,107.445385 L99,107.445385 M150.5,160.722692 L202,214 M150.5,160.722692 L99,214 " fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="all" transform="rotate(0 150.5 134.75)"></path>
+    </g>
+  </svg>
+  <div id="stack" style="box-sizing: border-box; width:100%; height:49%;position: relative; border-top: #32B5FE 1px dashed">
+    <div class='clone clonable' style='background-color:yellow;top:0;'></div>
+    <div class='clone-styled clonable' style='background-color:green;top:55px;'></div>
+    <div class='clone-clear clonable' style='background-color:red;top:110px;'></div>
+    
+    <div class='draggable' style='top:150px; left:150px;'></div>
+    <div class='draggable' style='top:150px; left:400px;'></div>
+  </div>
+</div>
+
+
+    <script type="text/javascript">//<![CDATA[
+
+
+class ZoomContainer {
+
+  constructor() {
+    this.scale = 1;
+  }
+
+  zoom(e) {
+    e.preventDefault();
+    if (!e.shiftKey) return;
+    let {
+      scale
+    } = this;
+    const newScale = scale + (e.wheelDelta < 0 ? -0.25 : 0.25);
+    scale = newScale > 2 || newScale < 0.5 ? scale : newScale;
+    subjx(e.currentTarget).css({
+      transform: `scale(${scale},${scale})`
+    });
+    this.scale = scale;
+  }
+
+}
+
+const zoomSvg = new ZoomContainer(),
+  zoomHtml = new ZoomContainer();
+
+subjx('#svg-container')
+  .on('mousewheel', e => {
+    zoomSvg.zoom(e);
+  });
+
+subjx('#stack')
+  .on('mousewheel', e => {
+    zoomHtml.zoom(e);
+  });
+
+// define methods
+const methods = {
+  onInit(el) {
+    console.log('init');
+  },
+  onMove({ dx, dy }) {
+    subjx('#move > span')[0].innerHTML = `x: ${dx}px; y: ${dy}px`;
+  },
+  onResize({ dx, dy }) {
+    subjx('#resize > span')[0].innerHTML = `x: ${dx}px; y: ${dy}px`;
+  },
+  onRotate({ delta }) {
+    subjx('#rotate > span')[0].innerHTML = `${Math.floor(delta * 180 / Math.PI)}deg`;
+  },
+  onDrop() {
+    console.log('is dropped');
+  },
+  onDestroy() {
+    console.log('is destroyed');
+  }
+};
+// additional options
+const svgOptions = {
+  container: '#svg-container',
+  restrict: '#svg-container',
+  rotationPoint: true,
+  snap: {
+    x: 30,
+    y: 30,
+    angle: 25
+  },
+  ...methods
+};
+
+const svgs =
+  subjx('.drag-svg').drag(svgOptions);
+
+svgs.forEach(item => {
+  subjx(item.controls).on('dblclick', () => {
+    item.disable();
+  });
+});
+
+// double click activating/deactivating the drag method
+subjx('.drag-svg').on('dblclick', e => {
+  if (e.currentTarget.classList.contains('sjx-drag')) return;
+  const xDraggable = subjx(e.currentTarget).drag(svgOptions)[0];
+  // adding event to controls
+  const controls = xDraggable.controls;
+  subjx(controls).on('dblclick', () => {
+    xDraggable.disable();
+  });
+});
+
+const options = {
+  container: '#stack',
+  restrict: '#stack',
+  proportions: true,
+  each: {
+    move: true,
+    resize: true
+  },
+  snap: {
+    x: 40,
+    y: 40,
+    angle: 0
+  },
+  cursorMove: 'move',
+  cursorRotate: 'crosshair',
+  cursorResize: 'pointer',
+  ...methods
+};
+
+const Draggables = subjx('.draggable').drag(options);
+
+Draggables.forEach(item => {
+  const controls = item.controls;
+  subjx(controls).on('dblclick', () => {
+    item.disable();
+    Draggables.splice(Draggables.indexOf(item), 1);
+  });
+});
+
+subjx('.draggable').on('dblclick', e => {
+  if (e.currentTarget.classList.contains('sjx-drag')) return;
+  const xDraggable = subjx(e.currentTarget).drag(options)[0];
+  Draggables.push(xDraggable);
+  // adding event to controls
+  const controls = xDraggable.controls;
+  subjx(controls).on('dblclick', () => {
+    xDraggable.disable();
+  });
+});
+
+const onDrop = (e, el, clone) => {
+
+  const stack = subjx('#stack')[0],
+    offset = stack.getBoundingClientRect(),
+    div = document.createElement('div');
+
+  div.style.top = `${e.clientY - offset.top}px`;
+  div.style.left = `${e.clientX - offset.left}px`;
+
+  div.classList.add('draggable');
+
+  stack.appendChild(div);
+
+  Draggables.push(...subjx(div).drag());
+};
+
+subjx('.clone').clone({
+  stack: '#stack',
+  appendTo: '#stack',
+  onDrop
+});
+
+subjx('.clone-styled').clone({
+  stack: '#stack',
+  style: {
+    border: '1px dashed green',
+    background: 'transparent'
+  },
+  onDrop
+});
+
+subjx('.clone-clear').on('click', () => {
+  Draggables.forEach(item => {
+    item.disable();
+    item.el.parentNode.removeChild(item.el);
+  });
+  Draggables.splice(0, Draggables.length);
+});
+
+
+
+  //]]></script>
+
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: "7f45j8qk"
+      }], "*")
+    }
+
+    // always overwrite window.name, in case users try to set it manually
+    window.name = "result"
+  </script>
+
+
+</body>
+</html>
