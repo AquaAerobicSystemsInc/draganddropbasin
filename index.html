@@ -264,11 +264,36 @@ Draggables.forEach(item => {
     Draggables.splice(Draggables.indexOf(item), 1);
   });
 });
+      
+
 
 subjx('.draggable').on('dblclick', e => {
   if (e.currentTarget.classList.contains('sjx-drag')) return;
   const xDraggable = subjx(e.currentTarget).drag(options)[0];
   Draggables.push(xDraggable);
+  // adding event to controls
+  const controls = xDraggable.controls;
+  subjx(controls).on('dblclick', () => {
+    xDraggable.disable();
+  });
+});
+      
+const Circleables = subjx('.circleable').drag(options);
+
+Circleables.forEach(item => {
+  const controls = item.controls;
+  subjx(controls).on('dblclick', () => {
+    item.disable();
+    Circleables.splice(Circleables.indexOf(item), 1);
+  });
+});
+      
+
+
+subjx('.circleable').on('dblclick', e => {
+  if (e.currentTarget.classList.contains('sjx-drag')) return;
+  const xDraggable = subjx(e.currentTarget).drag(options)[0];
+  Circleables.push(xDraggable);
   // adding event to controls
   const controls = xDraggable.controls;
   subjx(controls).on('dblclick', () => {
@@ -290,6 +315,14 @@ const onDrop = (e, el, clone) => {
   stack.appendChild(div);
 
   Draggables.push(...subjx(div).drag());
+  
+   div.classList.add('circleable');
+
+  stack.appendChild(div);
+
+  Circleables.push(...subjx(div).drag());
+  
+  
 };
 
 subjx('.clone').clone({
@@ -313,6 +346,11 @@ subjx('.clone-clear').on('click', () => {
     item.el.parentNode.removeChild(item.el);
   });
   Draggables.splice(0, Draggables.length);
+  Circleables.forEach(item => {
+    item.disable();
+    item.el.parentNode.removeChild(item.el);
+  });
+  Circleables.splice(0, Circleables.length);
 });
 
 
