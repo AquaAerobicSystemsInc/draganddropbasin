@@ -284,12 +284,6 @@ const onDrop = (e, el, clone) => {
 
   div.style.top = `${e.clientY - offset.top}px`;
   div.style.left = `${e.clientX - offset.left}px`;
-
-  div.classList.add('draggable');
-
-  stack.appendChild(div);
-
-  Draggables.push(...subjx(div).drag());
   
    div.classList.add('circleable');
 
@@ -316,11 +310,6 @@ subjx('.clone-styled').clone({
 });
 
 subjx('.clone-clear').on('click', () => {
-  Draggables.forEach(item => {
-    item.disable();
-    item.el.parentNode.removeChild(item.el);
-  });
-  Draggables.splice(0, Draggables.length);
   Circleables.forEach(item => {
     item.disable();
     item.el.parentNode.removeChild(item.el);
