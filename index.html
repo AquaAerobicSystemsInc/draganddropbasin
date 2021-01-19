@@ -263,12 +263,32 @@ Circleables.forEach(item => {
   });
 });
       
+      
+const ClonableCircleables = subjx('.clonablecircle').drag(options);
 
+ClonableCircleables.forEach(item => {
+  const controls = item.controls;
+  subjx(controls).on('dblclick', () => {
+    item.disable();
+    ClonableCircleables.splice(ClonableCircleables.indexOf(item), 1);
+  });
+});    
 
 subjx('.circleable').on('dblclick', e => {
   if (e.currentTarget.classList.contains('sjx-drag')) return;
   const xDraggable = subjx(e.currentTarget).drag(options)[0];
   Circleables.push(xDraggable);
+  // adding event to controls
+  const controls = xDraggable.controls;
+  subjx(controls).on('dblclick', () => {
+    xDraggable.disable();
+  });
+});
+      
+subjx('.clonablecircle').on('dblclick', e => {
+  if (e.currentTarget.classList.contains('sjx-drag')) return;
+  const xDraggable = subjx(e.currentTarget).drag(options)[0];
+  ClonableCircleables.push(xDraggable);
   // adding event to controls
   const controls = xDraggable.controls;
   subjx(controls).on('dblclick', () => {
