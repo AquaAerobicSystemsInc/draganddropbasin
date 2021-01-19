@@ -134,15 +134,8 @@ body {
   </svg>
    <div id="stack" style="box-sizing: border-box; width:100%; height:49%;position: relative; border-top: #32B5FE 1px dashed">
     <div class='clone clonablecircle' style='background-color:yellow;top:0;'></div>
-    <div class='clone-styled clonable' style='background-color:green;top:55px;'></div>
-    <div class='clone-clear clonable' style='background-color:red;top:110px;'></div>
     
     <div class='circleable' style='top:150px; left:150px;'></div>
-    <div class='circleable' style='top:150px; left:400px;'></div>
-     
-    <div class='draggable' style='top:150px; left:150px;'></div>
-    <div class='draggable' style='top:150px; left:400px;'></div>
-
   </div>
 </div>
 
@@ -258,28 +251,7 @@ const options = {
   ...methods
 };
 
-const Draggables = subjx('.draggable').drag(options);
 
-Draggables.forEach(item => {
-  const controls = item.controls;
-  subjx(controls).on('dblclick', () => {
-    item.disable();
-    Draggables.splice(Draggables.indexOf(item), 1);
-  });
-});
-      
-
-
-subjx('.draggable').on('dblclick', e => {
-  if (e.currentTarget.classList.contains('sjx-drag')) return;
-  const xDraggable = subjx(e.currentTarget).drag(options)[0];
-  Draggables.push(xDraggable);
-  // adding event to controls
-  const controls = xDraggable.controls;
-  subjx(controls).on('dblclick', () => {
-    xDraggable.disable();
-  });
-});
       
 const Circleables = subjx('.circleable').drag(options);
 
